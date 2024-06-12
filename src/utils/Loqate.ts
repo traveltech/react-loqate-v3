@@ -19,15 +19,26 @@ type LoqateNoErrorResponse = { Items?: Item[] };
 class Loqate {
   constructor(
     public key: string,
-    public baseUrl: string = LOQATE_BASE_URL
+    public baseUrl: string = LOQATE_BASE_URL,
+    public origin?: string,
+    public extrafields?: object
   ) {}
 
-  public static create(key: string, baseUrl: string = LOQATE_BASE_URL): Loqate {
-    return new Loqate(key, baseUrl);
+  public static create(
+    key: string,
+    baseUrl: string = LOQATE_BASE_URL,
+    origin?: string,
+    fields?: object
+  ): Loqate {
+    return new Loqate(key, baseUrl, origin, fields);
   }
 
   public async retrieve(id: string): Promise<LoqateNoErrorResponse> {
-    const params = new URLSearchParams({ Id: id, Key: this.key });
+    const params = new URLSearchParams(
+      this.extrafields
+        ? { Id: id, Key: this.key, ...this.extrafields }
+        : { Id: id, Key: this.key }
+    );
     const url = `${this.baseUrl}/${LOQATE_RETRIEVE_URL}?${params.toString()}`;
     const res = await fetch(url).then<LoqateResponse>((r) => r.json());
     const noLoqateErrosRes = this.handleErrors(res);
@@ -47,15 +58,20 @@ class Loqate {
 
     const params = new URLSearchParams({
       Text: text,
-      Countries: countries.join(','),
       language,
       Key: this.key,
     });
+    if (countries) {
+      params.set('Countries', countries.join(','));
+    }
     if (containerId) {
       params.set('Container', containerId);
     }
     if (limit) {
       params.set('limit', limit.toString());
+    }
+    if (this.origin) {
+      params.set('Origin', this.origin);
     }
     const url = `${this.baseUrl}/${LOQATE_FIND_URL}?${params.toString()}`;
     const response = await fetch(url).then<LoqateResponse>((r) => r.json());
