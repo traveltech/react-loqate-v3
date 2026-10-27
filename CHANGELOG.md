@@ -1,5 +1,15 @@
 # Change log
 
+## 3.1.0
+
+### Minor Changes
+
+- fb13050: Add `findUrl` and `retrieveUrl` props to override the Loqate find and retrieve endpoints
+
+### Patch Changes
+
+- 9129f04: Add support for Origin in find request and additional fields in retrieve response
+
 ## 3.0.0
 
 ### Major Changes
