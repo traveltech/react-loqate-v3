@@ -21,16 +21,20 @@ class Loqate {
     public key: string,
     public baseUrl: string = LOQATE_BASE_URL,
     public origin?: string,
-    public extrafields?: object
+    public extrafields?: object,
+    public findUrl: string = LOQATE_FIND_URL,
+    public retrieveUrl: string = LOQATE_RETRIEVE_URL
   ) {}
 
   public static create(
     key: string,
     baseUrl: string = LOQATE_BASE_URL,
     origin?: string,
-    fields?: object
+    fields?: object,
+    findUrl: string = LOQATE_FIND_URL,
+    retrieveUrl: string = LOQATE_RETRIEVE_URL
   ): Loqate {
-    return new Loqate(key, baseUrl, origin, fields);
+    return new Loqate(key, baseUrl, origin, fields, findUrl, retrieveUrl);
   }
 
   public async retrieve(id: string): Promise<LoqateNoErrorResponse> {
@@ -39,7 +43,7 @@ class Loqate {
         ? { Id: id, Key: this.key, ...this.extrafields }
         : { Id: id, Key: this.key }
     );
-    const url = `${this.baseUrl}/${LOQATE_RETRIEVE_URL}?${params.toString()}`;
+    const url = `${this.baseUrl}/${this.retrieveUrl}?${params.toString()}`;
     const res = await fetch(url).then<LoqateResponse>((r) => r.json());
     const noLoqateErrosRes = this.handleErrors(res);
 
@@ -73,7 +77,7 @@ class Loqate {
     if (this.origin) {
       params.set('Origin', this.origin);
     }
-    const url = `${this.baseUrl}/${LOQATE_FIND_URL}?${params.toString()}`;
+    const url = `${this.baseUrl}/${this.findUrl}?${params.toString()}`;
     const response = await fetch(url).then<LoqateResponse>((r) => r.json());
 
     return this.handleErrors(response);
