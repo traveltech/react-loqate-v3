@@ -31,6 +31,8 @@ export interface Props {
   apiUrl?: string;
   origin?: string;
   extraFields?: object;
+  findUrl?: string;
+  retrieveUrl?: string;
 }
 
 interface Components {
@@ -133,9 +135,12 @@ function AddressSearch(props: Props): JSX.Element {
     apiUrl,
     origin,
     extraFields,
+    findUrl,
+    retrieveUrl,
   } = props;
   const loqate = useMemo(
-    () => Loqate.create(apiKey, apiUrl, origin, extraFields),
+    () =>
+      Loqate.create(apiKey, apiUrl, origin, extraFields, findUrl, retrieveUrl),
     [apiKey]
   );
 
